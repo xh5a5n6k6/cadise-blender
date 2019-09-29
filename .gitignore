@@ -1,0 +1,8 @@
+# python project related files
+__pycache__/
+*.pyc
+/.idea/*
+/.vscode/*
+
+# generated add-on zip file
+*.zip
