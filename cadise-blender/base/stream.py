@@ -4,8 +4,12 @@ class FileStream:
     def __init__(self, file_full_name):
         self.__file = open(file_full_name + ".crsd", "w")
 
+    def write_string(self, content):
+        self.__file.write(content)
+        self.__file.flush()
+
     def write_default_info(self):
-        self.__file.write(
+        self.write_string(
             "###########################################\n" +
             "#                                         #\n" +
             "#    Cadise Renderer Scene Description    #\n" +
@@ -15,3 +19,6 @@ class FileStream:
             "#                                         #\n" +
             "###########################################\n\n"
         )
+    
+    def write_sd_data(self, sd_data):
+        self.write_string(sd_data.to_string())

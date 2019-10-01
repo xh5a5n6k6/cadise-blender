@@ -36,20 +36,19 @@ class OBJECT_OT_cadise_exporter(bpy.types.Operator, bpy_extras.io_utils.ExportHe
         if self.is_animation:
             for frame_number in range(scene.frame_start, scene.frame_end + 1):
                 scene.frame_set(frame_number)
-                self.export_scene(context.evaluated_depsgraph_get(), "scene_" + str(frame_number).zfill(5))
+                self.export_scene("scene_" + str(frame_number).zfill(5), context.evaluated_depsgraph_get())
 
         # export current frame
         else:
-            self.export_scene(context.evaluated_depsgraph_get(), "scene")
+            self.export_scene("scene", context.evaluated_depsgraph_get())
 
         return {"FINISHED"}
 
-    def export_scene(self, depsgraph, filename):
-        
-        exporter = CrsdExporter()
-        exporter.begin(self.filepath, filename)
-        # exporter.export(depsgraph)
-        # exporter.end()
+    def export_scene(self, filename, depsgraph):
+        exporter = CrsdExporter(filename)
+        exporter.begin(self.filepath)
+        exporter.export(depsgraph)
+        exporter.end()
 
 
 # define exporter module and setup its topbar setting

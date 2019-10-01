@@ -54,12 +54,24 @@ class RenderModule(module.ModuleBase):
     def register(self):
         bpy.utils.register_class(CadiseRenderEngine)
 
+        # add output panel's [Dimention] panel
         properties_output.RENDER_PT_dimensions.COMPAT_ENGINES.add(setting.cadise_id_name)
+
+        # add camera's data panel's [Lens], [Depth of Field] and [Camera] panels 
+        properties_data_camera.DATA_PT_lens.COMPAT_ENGINES.add(setting.cadise_id_name)
+        properties_data_camera.DATA_PT_camera_dof.COMPAT_ENGINES.add(setting.cadise_id_name)
+        properties_data_camera.DATA_PT_camera.COMPAT_ENGINES.add(setting.cadise_id_name)
 
     def unregister(self):
         bpy.utils.unregister_class(CadiseRenderEngine)
 
+        # remove output panel's [Dimention] panel
         properties_output.RENDER_PT_dimensions.COMPAT_ENGINES.remove(setting.cadise_id_name)
+
+        # remove camera's data panel's [Lens], [Depth of Field] and [Camera] panels 
+        properties_data_camera.DATA_PT_lens.COMPAT_ENGINES.remove(setting.cadise_id_name)
+        properties_data_camera.DATA_PT_camera_dof.COMPAT_ENGINES.remove(setting.cadise_id_name)
+        properties_data_camera.DATA_PT_camera.COMPAT_ENGINES.remove(setting.cadise_id_name)
 
 
 # add render module in moduleManager
