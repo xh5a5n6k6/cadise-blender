@@ -6,7 +6,7 @@ from . import (
 import bpy
 
 class CadiseAddonPreferences(bpy.types.AddonPreferences):
-    # According T.C. Chang's work, this must match add-on's name
+    # Reference to T.C. Chang's work, this must match add-on's name
     # https://github.com/TzuChieh/Photon-v2/blob/develop/BlenderAddon/PhotonBlend/bmodule/__init__.py
     bl_idname = __package__.split('.')[0]
 

@@ -1,8 +1,3 @@
-from abc import (
-    ABC,
-    abstractmethod
-)
-
 """
 Each SdData has its type and lots of SdDataUnits.
 Its string format follow the rule:
@@ -14,7 +9,7 @@ Its string format follow the rule:
     }
 
 """
-class SdData(ABC):
+class SdData:
     def __init__(self, sd_type):
         self.__type       = sd_type
         self.__data_units = []
@@ -35,7 +30,7 @@ class SdData(ABC):
 Each SdDataUnit is enclosed by [].
 Its string format follows the rule:
 
-    \t[name type str(value)]
+    \t[name type "value"]
 
     Ex. [output-filename string "cadise-blender-scene.jpg"]
         [albedo rgb "1.0 1.0 1.0"]

@@ -6,11 +6,11 @@ import bpy
 
 def material_to_sd_data(material: bpy.types.Material):
     if material.use_nodes:
-        mat_sd_data = None
+        # mat_sd_data = None
 
 
 
-        return mat_sd_data
+        return None
     
     else:
         print("Only support material with nodes system")

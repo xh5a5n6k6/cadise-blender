@@ -22,11 +22,11 @@ def get_mesh_objects(scene: bpy.types.Scene):
 def get_active_camera(scene: bpy.types.Scene):
     return scene.camera
 
-def get_materials_from_meshes(scene: bpy.types.Scene):
+def get_materials_from_meshes(mesh_objs):
     materials = []
-    mesh_objs = get_mesh_objects(scene)
-    for mesh in mesh_objs:
-        for mat in mesh.data.materials[:]:
+    for mesh_obj in mesh_objs:
+        mesh_data = mesh_obj.data
+        for mat in mesh_data.materials[:]:
             # TODO: check material type
 
             if materials.count(mat) != 0:
@@ -37,7 +37,13 @@ def get_materials_from_meshes(scene: bpy.types.Scene):
     return materials
 
 
-def get_filter_type(filter_type):
+def get_full_mesh_name_with_material(mesh_name, material_index):
+    return "{}@{}".format(mesh_name, material_index)
+
+
+def get_filter_type_from_scene(scene: bpy.types.Scene):
+    filter_type = scene.cadise_render_filter_type
+
     if filter_type == "BOX":
         return "box"
     elif filter_type == "CONE":
@@ -51,7 +57,9 @@ def get_filter_type(filter_type):
 
         return "gaussian"
 
-def get_sampling_type(sampling_type):
+def get_sampling_type_from_scene(scene: bpy.types.Scene):
+    sampling_type = scene.cadise_render_sampling_type
+
     if sampling_type == "RANDOM":
         return "random"
     elif sampling_type == "STRATIFIED":
@@ -61,7 +69,9 @@ def get_sampling_type(sampling_type):
 
         return "stratified"
 
-def get_rendering_method(rendering_method):
+def get_rendering_method_from_scene(scene: bpy.types.Scene):
+    rendering_method = scene.cadise_render_rendering_method
+
     if rendering_method == "WHITTED":
         return "whitted"
     elif rendering_method == "PUREPATH":

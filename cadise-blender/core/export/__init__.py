@@ -7,12 +7,16 @@ from ...base import (
     helper,
     stream
 )
-from ...crsd.creator import (
+from ...crsd.crsd_camera import PerspectiveCameraCreator
+from ...crsd.crsd_creator import (
     AcceleratorCreator,
     FilmCreator,
     RendererCreator
 )
-from ...crsd.camera import PerspectiveCameraCreator
+from ...crsd.crsd_type import (
+    CrsdReal,
+    CrsdVector3r
+)
 
 import bpy
 import math
@@ -61,15 +65,26 @@ class CrsdExporter:
         self.__export_accelerator(scene)
 
     def __export_world_setting(self, depsgraph: bpy.types.Depsgraph):
-        self.__export_material(depsgraph)
-        self.__export_mesh(depsgraph)
-        self.__export_light(depsgraph)
+        scene = depsgraph.scene_eval
+        
+        mesh_objs = helper.get_mesh_objects(scene)
+        materials = helper.get_materials_from_meshes(mesh_objs)
+        light_objs = helper.get_light_objects(scene)
+
+        for material in materials:
+            self.__export_material(material)
+
+        for mesh_obj in mesh_objs:
+            self.__export_mesh(mesh_obj)
+
+        for light_obj in light_objs:
+            self.__export_light(light_obj)
 
     def __export_film(self, scene: bpy.types.Scene):
         resolution_x = scene.render.resolution_x
         resolution_y = scene.render.resolution_y
-        output_filename = self.__filename + ".jpg"
-        filter_type = helper.get_filter_type(scene.cadise_render_filter_type)
+        output_filename = self.__filename + ".png"
+        filter_type = helper.get_filter_type_from_scene(scene)
 
         filmCreator = FilmCreator()
         filmCreator.set_image_width(resolution_x)
@@ -95,18 +110,13 @@ class CrsdExporter:
             up = rotation @ mathutils.Vector((0, 1, 0))
             direction = rotation @ mathutils.Vector((0, 0, -1))
 
-            look_at = "{:.6f} {:.6f} {:.6f}, " \
-                      "{:.6f} {:.6f} {:.6f}, " \
-                      "{:.6f} {:.6f} {:.6f}".format(
-                          position.x, position.y, position.z,
-                          direction.x, direction.y, direction.z,
-                          up.x, up.y, up.z
-                      )
             fov = math.degrees(camera_data.angle)
 
             perspectiveCameraCreator = PerspectiveCameraCreator()
-            perspectiveCameraCreator.set_look_at(look_at)
-            perspectiveCameraCreator.set_fov(fov)
+            perspectiveCameraCreator.set_position(CrsdVector3r(position))
+            perspectiveCameraCreator.set_direction(CrsdVector3r(direction))
+            perspectiveCameraCreator.set_up(CrsdVector3r(up))
+            perspectiveCameraCreator.set_fov(CrsdReal(fov))
 
             self.__filestream.write_sd_data(perspectiveCameraCreator.to_sd_data())
 
@@ -117,8 +127,8 @@ class CrsdExporter:
 
     def __export_renderer(self, scene: bpy.types.Scene):
         sample_number = scene.cadise_render_spp
-        sampler = helper.get_sampling_type(scene.cadise_render_sampling_type)
-        render_method = helper.get_rendering_method(scene.cadise_render_rendering_method)
+        sampler = helper.get_sampling_type_from_scene(scene)
+        render_method = helper.get_rendering_method_from_scene(scene)
 
         rendererCreator = RendererCreator()
         rendererCreator.set_render_method(render_method)
@@ -132,26 +142,62 @@ class CrsdExporter:
 
         self.__filestream.write_sd_data(acceleratorCreator.to_sd_data())
 
-    def __export_material(self, depsgraph: bpy.types.Depsgraph):
-        scene = depsgraph.scene_eval
-        materials = helper.get_materials_from_meshes(scene)
+    def __export_material(self, mat: bpy.types.Material):
+        material_sd_data = material.material_to_sd_data(mat)
 
-        for mat in materials:
-            material_sd_data = material.material_to_sd_data(mat)
+        if material_sd_data is not None:
+            self.__filestream.write_sd_data(material_sd_data)
 
-            # if material_sd_data is not None:
-            #     self.__filestream.write_sd_data(material_sd_data)
+    def __export_mesh(self, mesh_obj: bpy.types.Mesh):
+        mesh_data = mesh_obj.data
+        
+        # split mesh to triangles
+        mesh_data.calc_loop_triangles()
 
-    def __export_mesh(self, depsgraph: bpy.types.Depsgraph):
-        scene = depsgraph.scene_eval
-        mesh_objs = helper.get_mesh_objects(scene)
+        # check if uses custom normals
+        if mesh_data.has_custom_normals:
+            mesh_data.calc_normals_split()
+        else:
+            mesh_data.calc_normals()
 
-        for mesh_obj in mesh_objs:
-            pass
+        # build material-triangles remapping to export 
+        # all triangles with the same material as one triangle-mesh
+        material_index_triangle_remapping = {}
+        for loop_triangle in mesh_data.loop_triangles:
+            material_index = loop_triangle.material_index
 
-    def __export_light(self, depsgraph: bpy.types.Depsgraph):
-        scene = depsgraph.scene_eval
-        light_objs = helper.get_light_objects(scene)
+            if material_index not in material_index_triangle_remapping.keys():
+                material_index_triangle_remapping[material_index] = []
+            
+            material_index_triangle_remapping[material_index].append(loop_triangle)
 
-        for light_obj in light_objs:
-            pass
+        # for each material, export all corrsponding triangles
+        # as triangle-mesh
+        for material_index in material_index_triangle_remapping.keys():
+            material = mesh_obj.material_slots[material_index].material
+            loop_triangles = material_index_triangle_remapping[material_index]
+
+            if material is None:
+                continue
+
+            triangle_mesh_name = helper.get_full_mesh_name_with_material(mesh_obj.name, material_index)
+            matrial_name = material.name
+
+            # It currently only exports one uv map
+            uv_layers = mesh_data.uv_layers
+            uv_layer = uv_layers.active
+            uv_data = uv_layer.data if uv_layer.data is not None else None
+
+            mesh_sd_data = mesh.mesh_to_sd_data(
+                mesh_data.vertices,
+                loop_triangles,
+                triangle_mesh_name,
+                matrial_name,
+                mesh_data.has_custom_normals,
+                uv_data
+            )
+
+            self.__filestream.write_sd_data(mesh_sd_data)            
+
+    def __export_light(self, light: bpy.types.Light):
+        pass
