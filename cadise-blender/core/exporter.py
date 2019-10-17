@@ -1,5 +1,5 @@
 
-from .export import CrsdExporter
+from .export.crsd_exporter import CrsdExporter
 from ..base.module import ModuleBase
 
 import bpy

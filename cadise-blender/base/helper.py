@@ -1,6 +1,9 @@
 import bpy
 import os
 
+'''
+io related functions
+'''
 def create_folder(file_path):
     if not os.path.exists(file_path):
         os.makedirs(file_path)
@@ -9,7 +12,9 @@ def get_file_full_name(file_path, file_name):
     return os.path.join(file_path, file_name)
 
 
-# find specific objects
+'''
+find specific objects
+'''
 def get_camera_objects(scene: bpy.types.Scene):
     return [obj for obj in scene.objects if obj.type == 'CAMERA']
 
@@ -37,10 +42,16 @@ def get_materials_from_meshes(mesh_objs):
     return materials
 
 
+'''
+ensure each triangle-mesh exported has unique name, it is need for cadise.
+'''
 def get_full_mesh_name_with_material(mesh_name, material_index):
     return "{}@{}".format(mesh_name, material_index)
 
 
+'''
+get some rendering setting from the scene
+'''
 def get_filter_type_from_scene(scene: bpy.types.Scene):
     filter_type = scene.cadise_render_filter_type
 

@@ -21,7 +21,7 @@ class CadiseRenderEngine(bpy.types.RenderEngine):
     # instances may exist at the same time, for example for a viewport and final
     # render.
     def __init__(self):
-        super.__init__()
+        super().__init__()
 
     # When the render engine instance is destroy, this is called. Clean up any
     # render engine data here, for example stopping running render threads.

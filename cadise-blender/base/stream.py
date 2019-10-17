@@ -2,11 +2,11 @@ import os
 
 class FileStream:
     def __init__(self, file_full_name):
-        self.__file = open(file_full_name + ".crsd", "w")
+        self.file = open(file_full_name + ".crsd", "w")
 
     def write_string(self, content):
-        self.__file.write(content)
-        self.__file.flush()
+        self.file.write(content)
+        self.file.flush()
 
     def write_default_info(self):
         self.write_string(
