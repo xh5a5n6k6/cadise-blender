@@ -5,7 +5,7 @@ This repository maintains blender exporter for cadise. It takes some other rende
 
 It only supports Blender 2.80 and higher.
 
-## Support Features
+## Supported Features
 - Mesh (triangle-mesh)
 - Light (point light, square / rectangle area light)
 

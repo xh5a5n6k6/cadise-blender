@@ -53,7 +53,7 @@ class CADISE_RENDER_PT_sampling(CadiseRenderPanel):
         ],
         name = "Filter Type",
         description = "Cadise's filter types",
-        default = "MITCHELL",
+        default = "GAUSSIAN",
     )
 
     def draw(self, context):
@@ -70,7 +70,7 @@ class CADISE_RENDER_PT_render(CadiseRenderPanel):
     bpy.types.Scene.cadise_render_rendering_method = bpy.props.EnumProperty(
         items = [
             ("WHITTED", "Whitted", "Whitted ray tracing"),
-            ("PUREPATH", "Pure Path", "Pure path tracing"),
+            ("NAIVEPATH", "Naive Path", "Naive path tracing"),
             ("PATH", "Path", "Path tracing with NEE")
         ],
         name = "Rendering Method",

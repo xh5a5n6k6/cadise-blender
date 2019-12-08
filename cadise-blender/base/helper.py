@@ -1,5 +1,13 @@
 import bpy
+import mathutils
 import os
+
+'''
+transform Blender's coordinate system to Cadise's,
+(x, y, z) -> (y, z, x)
+'''
+def to_cadise_vector(vector: mathutils.Vector):
+    return mathutils.Vector((vector.y, vector.z, vector.x))
 
 '''
 io related functions
@@ -85,8 +93,8 @@ def get_rendering_method_from_scene(scene: bpy.types.Scene):
 
     if rendering_method == "WHITTED":
         return "whitted"
-    elif rendering_method == "PUREPATH":
-        return "purePath"
+    elif rendering_method == "NAIVEPATH":
+        return "naive-path"
     elif rendering_method == "PATH":
         return "path"
     else:

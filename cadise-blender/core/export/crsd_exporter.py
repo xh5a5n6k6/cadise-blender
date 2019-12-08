@@ -66,8 +66,8 @@ class CrsdExporter:
     def export_world_setting(self, depsgraph: bpy.types.Depsgraph):
         scene = depsgraph.scene_eval
         
-        mesh_objs = helper.get_mesh_objects(scene)
-        materials = helper.get_materials_from_meshes(mesh_objs)
+        mesh_objs  = helper.get_mesh_objects(scene)
+        materials  = helper.get_materials_from_meshes(mesh_objs)
         light_objs = helper.get_light_objects(scene)
 
         for material in materials:
@@ -110,15 +110,19 @@ class CrsdExporter:
                print("scale: {} {} {}".format(scale.x, scale.y, scale.z))
                return
             
-            up = rotation @ mathutils.Vector((0, 1, 0))
+            up        = rotation @ mathutils.Vector((0, 1, 0))
             direction = rotation @ mathutils.Vector((0, 0, -1))
 
             fov = math.degrees(camera_data.angle)
 
+            cadise_vector_position  = helper.to_cadise_vector(position)
+            cadise_vector_direction = helper.to_cadise_vector(direction)
+            cadise_vector_up        = helper.to_cadise_vector(up)
+
             perspectiveCameraCreator = PerspectiveCameraCreator()
-            perspectiveCameraCreator.set_position(CrsdVector3r(position))
-            perspectiveCameraCreator.set_direction(CrsdVector3r(direction))
-            perspectiveCameraCreator.set_up(CrsdVector3r(up))
+            perspectiveCameraCreator.set_position(CrsdVector3r(cadise_vector_position))
+            perspectiveCameraCreator.set_direction(CrsdVector3r(cadise_vector_direction))
+            perspectiveCameraCreator.set_up(CrsdVector3r(cadise_vector_up))
             perspectiveCameraCreator.set_fov(CrsdReal(fov))
 
             self.filestream.write_sd_data(perspectiveCameraCreator.to_sd_data())

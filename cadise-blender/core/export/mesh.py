@@ -50,11 +50,13 @@ def mesh_to_sd_data(vertices,
     # store vector list as CrsdVector3rArray
     crsd_positions = CrsdVector3rArray()
     for position in positions:
-        crsd_positions.append(CrsdVector3r(position))
+        cadise_vector_position = helper.to_cadise_vector(position)
+        crsd_positions.append(CrsdVector3r(cadise_vector_position))
 
     crsd_normals = CrsdVector3rArray()
     for normal in normals:
-        crsd_normals.append(CrsdVector3r(normal))
+        cadise_vector_normal = helper.to_cadise_vector(normal)
+        crsd_normals.append(CrsdVector3r(cadise_vector_normal))
 
     crsd_uvws = CrsdVector3rArray()
     for uvw in uvws:
