@@ -8,18 +8,18 @@ from .crsd_type import (
     CrsdVector3r
 )
 
-class PerspectiveCameraCreator(CameraCreator):
+class PerspectivePinholeCameraCreator(CameraCreator):
     def __init__(self):
-        super(PerspectiveCameraCreator, self).__init__()
+        super(PerspectivePinholeCameraCreator, self).__init__()
 
-        self.type      = "perspective"
+        self.type      = "perspective-pinhole"
         self.position  = CrsdVector3r()
         self.direction = CrsdVector3r()
         self.up        = CrsdVector3r()
         self.fov       = CrsdReal()
     
     def to_sd_data(self):
-        sd_data = SdData(super(PerspectiveCameraCreator, self).get_sd_type())
+        sd_data = SdData(super(PerspectivePinholeCameraCreator, self).get_sd_type())
         sd_data.add_data_unit(SdDataUnit("type", "string", self.type))
         sd_data.add_data_unit(SdDataUnit("position", "vector3r", self.position.to_string()))
         sd_data.add_data_unit(SdDataUnit("direction", "vector3r", self.direction.to_string()))

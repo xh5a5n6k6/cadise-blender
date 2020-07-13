@@ -7,7 +7,7 @@ from ...base import (
     helper,
     stream
 )
-from ...crsd.crsd_camera import PerspectiveCameraCreator
+from ...crsd.crsd_camera import PerspectivePinholeCameraCreator
 from ...crsd.crsd_creator import (
     AcceleratorCreator,
     FilmCreator,
@@ -115,17 +115,17 @@ class CrsdExporter:
 
             fov = math.degrees(camera_data.angle)
 
-            cadise_vector_position  = helper.to_cadise_vector(position)
-            cadise_vector_direction = helper.to_cadise_vector(direction)
-            cadise_vector_up        = helper.to_cadise_vector(up)
+            position  = helper.to_cadise_vector(position)
+            direction = helper.to_cadise_vector(direction)
+            up        = helper.to_cadise_vector(up)
 
-            perspectiveCameraCreator = PerspectiveCameraCreator()
-            perspectiveCameraCreator.set_position(CrsdVector3r(cadise_vector_position))
-            perspectiveCameraCreator.set_direction(CrsdVector3r(cadise_vector_direction))
-            perspectiveCameraCreator.set_up(CrsdVector3r(cadise_vector_up))
-            perspectiveCameraCreator.set_fov(CrsdReal(fov))
+            perspectivePinholeCameraCreator = PerspectivePinholeCameraCreator()
+            perspectivePinholeCameraCreator.set_position(CrsdVector3r(position))
+            perspectivePinholeCameraCreator.set_direction(CrsdVector3r(direction))
+            perspectivePinholeCameraCreator.set_up(CrsdVector3r(up))
+            perspectivePinholeCameraCreator.set_fov(CrsdReal(fov))
 
-            self.filestream.write_sd_data(perspectiveCameraCreator.to_sd_data())
+            self.filestream.write_sd_data(perspectivePinholeCameraCreator.to_sd_data())
 
             # TODO: depth of field and lens system camera
 
