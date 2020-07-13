@@ -41,7 +41,7 @@ def mesh_to_sd_data(vertices,
         if has_custom_normals:
             split_normals = loop_triangle.split_normals
             for split_normal in split_normals:
-                normals.append(rotation @ split_normal)
+                normals.append(rotation @ mathutils.Vector(split_normal))
         
         for loop_index in loop_triangle.loops:
             uv = uv_loops[loop_index].uv if uv_loops is not None else (0.0, 0.0)
