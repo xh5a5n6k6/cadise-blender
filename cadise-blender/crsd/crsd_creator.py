@@ -75,6 +75,22 @@ class RendererCreator(Creator):
     def set_sampler(self, sampler):
         self.sampler = sampler
 
+class LightClusterCreator(Creator):
+    def __init__(self):
+        super(LightClusterCreator, self).__init__()
+
+        self.sd_type = "light-cluster"
+        self.type    = "uniform"
+
+    def get_sd_type(self):
+        return self.sd_type
+
+    def to_sd_data(self):
+        sd_data = SdData(self.sd_type)    
+        sd_data.add_data_unit(SdDataUnit("type", "string", self.type))
+
+        return sd_data
+
 class AcceleratorCreator(Creator):
     def __init__(self):
         super(AcceleratorCreator, self).__init__()

@@ -26,7 +26,8 @@ from ...crsd.crsd_camera import (
 
 from ...crsd.crsd_creator import (
     FilmCreator,
-    RendererCreator
+    RendererCreator,
+    LightClusterCreator
 )
 
 """
@@ -81,6 +82,7 @@ class CrsdExporter:
         self.export_camera(scene)
         self.export_renderer(scene)
         self.export_accelerator(scene)
+        self.export_light_cluster(scene)
 
     def export_world_setting(self, depsgraph: bpy.types.Depsgraph):
         scene = depsgraph.scene_eval
@@ -174,3 +176,8 @@ class CrsdExporter:
             print("Fail to export accelerator.")
 
         self.filestream.write_sd_data(acceleratorCreator.to_sd_data())
+    
+    def export_light_cluster(self, scene: bpy.types.Scene):
+        lightClusterCreator = LightClusterCreator()
+
+        self.filestream.write_sd_data(lightClusterCreator.to_sd_data())
