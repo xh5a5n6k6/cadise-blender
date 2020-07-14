@@ -3,9 +3,9 @@ from ..base import setting
 import bpy
 
 class CadiseRenderPanel(bpy.types.Panel):
-    bl_space_type = "PROPERTIES"
+    bl_space_type  = "PROPERTIES"
     bl_region_type = "WINDOW"
-    bl_context = "render"
+    bl_context     = "render"
     
     COMPAT_ENGINES = {setting.cadise_id_name}
 
@@ -18,7 +18,7 @@ class CADISE_RENDER_PT_option(CadiseRenderPanel):
     bl_label = "Cadise - Option"
 
     def draw(self, context):
-        scene = context.scene
+        scene  = context.scene
         layout = self.layout
 
         # layout.prop(scene, "cadise_is_animation")
@@ -27,11 +27,11 @@ class CADISE_RENDER_PT_sampling(CadiseRenderPanel):
     bl_label = "Cadise - Sampling"
 
     bpy.types.Scene.cadise_render_spp = bpy.props.IntProperty (
-        name = "SPP",
+        name        = "SPP",
         description = "Samples per pixel",
-        default = 4,
-        min = 1,
-        max = 2 ** 31 - 1
+        default     = 4,
+        min         = 1,
+        max         = 2 ** 31 - 1
     )
 
     bpy.types.Scene.cadise_render_sampling_type = bpy.props.EnumProperty(
@@ -39,9 +39,10 @@ class CADISE_RENDER_PT_sampling(CadiseRenderPanel):
             ("RANDOM", "Random", "Random sampling"),
             ("STRATIFIED", "Stratified", "Stratified jitter sampling")
         ],
-        name = "Sampling Type",
+
+        name        = "Sampling Type",
         description = "Cadise's sampling types",
-        default = "STRATIFIED",
+        default     = "STRATIFIED",
     )
 
     bpy.types.Scene.cadise_render_filter_type = bpy.props.EnumProperty(
@@ -51,13 +52,14 @@ class CADISE_RENDER_PT_sampling(CadiseRenderPanel):
             ("GAUSSIAN", "Gaussian", "Gaussian filter"),
             ("MITCHELL", "Mitchell", "Mitchell filter")
         ],
-        name = "Filter Type",
-        description = "Cadise's filter types",
-        default = "GAUSSIAN",
+
+        name        = "Filter Type",
+        description = "Filter types supported by Cadise",
+        default     = "GAUSSIAN",
     )
 
     def draw(self, context):
-        scene = context.scene
+        scene  = context.scene
         layout = self.layout
 
         layout.prop(scene, "cadise_render_spp")
@@ -67,21 +69,34 @@ class CADISE_RENDER_PT_sampling(CadiseRenderPanel):
 class CADISE_RENDER_PT_render(CadiseRenderPanel):
     bl_label = "Cadise - Render"
 
+    bpy.types.Scene.cadise_render_accelerator_type = bpy.props.EnumProperty(
+        items = [
+            ("BVH", "Bvh", "Binary volume hierarchy accelerator"),
+            ("KDTREE", "Kd-tree", "Kd-tree accelerator")
+        ],
+
+        name        = "Accelerator type",
+        description = "Accelerator types supported by Cadise",
+        default     = "KDTREE",
+    )
+
     bpy.types.Scene.cadise_render_rendering_method = bpy.props.EnumProperty(
         items = [
             ("WHITTED", "Whitted", "Whitted ray tracing"),
             ("NAIVEPATH", "Naive Path", "Naive path tracing"),
             ("PATH", "Path", "Path tracing with NEE")
         ],
-        name = "Rendering Method",
-        description = "Cadise's rendering methods",
-        default = "PATH",
+
+        name        = "Rendering Method",
+        description = "Rendering methods supported by Cadise",
+        default     = "PATH",
     )
 
     def draw(self, context):
         scene = context.scene
         layout = self.layout
 
+        layout.prop(scene, "cadise_render_accelerator_type")
         layout.prop(scene, "cadise_render_rendering_method")
 
 

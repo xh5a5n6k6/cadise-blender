@@ -101,3 +101,15 @@ def get_rendering_method_from_scene(scene: bpy.types.Scene):
         print("Unknown rendering method, use path rendering method instead")
 
         return "path"
+
+def get_accelerator_type_from_scene(scene: bpy.types.Scene):
+    accelerator_type = scene.cadise_render_accelerator_type
+
+    if accelerator_type == "BVH":
+        return "bvh"
+    elif accelerator_type == "KDTREE":
+        return "kd-tree"
+    else:
+        print("Unknown accelerator type, use kd-tree accelerator type instead")
+
+        return "kd-tree"

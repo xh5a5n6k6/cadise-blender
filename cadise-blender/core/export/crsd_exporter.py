@@ -7,12 +7,31 @@ from ...base import (
     helper,
     stream
 )
-from ...crsd.crsd_camera import PerspectivePinholeCameraCreator
+
+"""
+supported accelerator types
+"""
+from ...crsd.crsd_accelerator import (
+    BvhAcceleratorCreator,
+    KdTreeAcceleratorCreator
+)
+
+"""
+supported camera types
+"""
+from ...crsd.crsd_camera import (
+    PerspectivePinholeCameraCreator
+)
+
+
 from ...crsd.crsd_creator import (
-    AcceleratorCreator,
     FilmCreator,
     RendererCreator
 )
+
+"""
+fundamental types
+"""
 from ...crsd.crsd_type import (
     CrsdReal,
     CrsdVector3r
@@ -24,7 +43,7 @@ import mathutils
 
 class CrsdExporter:
     def __init__(self, filename):
-        self.filename = filename
+        self.filename   = filename
         self.filestream = None
 
     def begin(self, file_path):
@@ -83,10 +102,10 @@ class CrsdExporter:
 
     def export_film(self, scene: bpy.types.Scene):
         resolution_percentage = scene.render.resolution_percentage / 100.0
-        resolution_x = int(scene.render.resolution_x * resolution_percentage)
-        resolution_y = int(scene.render.resolution_y * resolution_percentage)
-        output_filename = self.filename + ".png"
-        filter_type = helper.get_filter_type_from_scene(scene)
+        resolution_x          = int(scene.render.resolution_x * resolution_percentage)
+        resolution_y          = int(scene.render.resolution_y * resolution_percentage)
+        output_filename       = self.filename + ".png"
+        filter_type           = helper.get_filter_type_from_scene(scene)
 
         filmCreator = FilmCreator()
         filmCreator.set_image_width(resolution_x)
@@ -97,7 +116,7 @@ class CrsdExporter:
         self.filestream.write_sd_data(filmCreator.to_sd_data())
 
     def export_camera(self, scene: bpy.types.Scene):
-        camera_obj = helper.get_active_camera(scene)
+        camera_obj  = helper.get_active_camera(scene)
         camera_data = camera_obj.data
         
         if camera_data.type == 'PERSP':
@@ -128,13 +147,12 @@ class CrsdExporter:
             self.filestream.write_sd_data(perspectivePinholeCameraCreator.to_sd_data())
 
             # TODO: depth of field and lens system camera
-
         else:
             print("Unsupport other types of camera currently.")
 
     def export_renderer(self, scene: bpy.types.Scene):
         sample_number = scene.cadise_render_spp
-        sampler = helper.get_sampling_type_from_scene(scene)
+        sampler       = helper.get_sampling_type_from_scene(scene)
         render_method = helper.get_rendering_method_from_scene(scene)
 
         rendererCreator = RendererCreator()
@@ -145,6 +163,14 @@ class CrsdExporter:
         self.filestream.write_sd_data(rendererCreator.to_sd_data())
 
     def export_accelerator(self, scene: bpy.types.Scene):
-        acceleratorCreator = AcceleratorCreator()
+        acceleratorCreator = None
+        accelerator_type   = helper.get_accelerator_type_from_scene(scene)
+        
+        if accelerator_type == "bvh":
+            acceleratorCreator = BvhAcceleratorCreator()
+        elif accelerator_type == "kd-tree":
+            acceleratorCreator = KdTreeAcceleratorCreator()
+        else:
+            print("Fail to export accelerator.")
 
         self.filestream.write_sd_data(acceleratorCreator.to_sd_data())
